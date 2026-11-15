@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Formularios Alime-Lucia</title>
+  <meta name="theme-color" content="#0f2b46">
+  <meta name="description" content="Presupuestos, órdenes de compra, órdenes de trabajo, solicitudes y recibos de cobro.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icono-192.png">
+  <link rel="apple-touch-icon" href="assets/icono-192.png">
+  <link rel="stylesheet" href="estilos.css?v=1.0.0">
+</head>
+<body>
+
+  <div id="pantalla-conexion" class="pantalla-conexion">
+    <div class="conexion-caja">
+      <div class="conexion-marca">
+        <img src="assets/logo-alime.jpg" alt="ALIME" class="conexion-logo">
+        <img src="assets/logo-lucia.png" alt="LUCIA" class="conexion-logo conexion-logo-lucia">
+      </div>
+      <h1>Formularios Alime-Lucia</h1>
+      <p class="conexion-bajada">Presupuestos, órdenes y recibos desde cualquier dispositivo.</p>
+
+      <form id="form-conexion" autocomplete="off">
+        <label for="conexion-api">URL de la API</label>
+        <input id="conexion-api" type="url" inputmode="url" placeholder="https://script.google.com/macros/s/.../exec" required>
+
+        <label for="conexion-pin">PIN de acceso</label>
+        <input id="conexion-pin" type="password" inputmode="numeric" placeholder="Tu PIN" required>
+
+        <label for="conexion-usuario">Nombre de usuario (opcional)</label>
+        <input id="conexion-usuario" type="text" placeholder="Ej: Guillermo" maxlength="80">
+
+        <div id="conexion-error" class="mensaje-error oculto"></div>
+
+        <button id="btn-conectar" class="btn btn-primario btn-ancho" type="submit">Conectar</button>
+      </form>
+
+      <div class="conexion-ayuda">
+        <button id="btn-usar-local" class="btn btn-texto" type="button">Usar servidor local de prueba</button>
+        <p class="nota">Para probar en esta PC: <code>node servidor-local.js</code> y PIN <code>1234</code>.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="app" class="app oculto">
+    <header class="barra no-imprimir">
+      <div class="barra-marca">
+        <img src="assets/logo-alime.jpg" alt="" class="barra-logo">
+        <img src="assets/logo-lucia.png" alt="" class="barra-logo barra-logo-lucia">
+        <span>Formularios Alime-Lucia</span>
+      </div>
+
+      <nav class="barra-nav" aria-label="Navegación principal">
+        <button class="nav-btn activo" data-vista="inicio" type="button">Inicio</button>
+        <button class="nav-btn" data-vista="documentos" type="button">Documentos</button>
+        <button class="nav-btn" data-vista="directorio" type="button">Directorio</button>
+        <button class="nav-btn" data-vista="configuracion" type="button">Configuración</button>
+      </nav>
+
+      <div class="barra-derecha">
+        <span id="indicador-conexion" class="indicador" title="Conexión">●</span>
+        <button id="btn-salir" class="btn btn-texto" type="button">Salir</button>
+      </div>
+    </header>
+
+    <main id="contenido" class="contenido">
+      <section id="vista-inicio" class="vista"></section>
+      <section id="vista-documentos" class="vista oculto"></section>
+      <section id="vista-directorio" class="vista oculto"></section>
+      <section id="vista-editor" class="vista oculto"></section>
+      <section id="vista-configuracion" class="vista oculto"></section>
+    </main>
+
+    <footer class="pie-app no-imprimir">
+      <span>Formularios Alime-Lucia · v1.0.0</span>
+      <span id="pie-conexion"></span>
+    </footer>
+  </div>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <div id="modal-contacto" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="modal-contacto-titulo">
+    <div class="modal-caja">
+      <div class="modal-cabecera">
+        <h2 id="modal-contacto-titulo">Nuevo contacto</h2>
+        <button class="btn-cerrar" type="button" data-cerrar="modal-contacto" aria-label="Cerrar">×</button>
+      </div>
+      <form id="form-contacto" class="modal-cuerpo" autocomplete="off">
+        <input id="contacto-id" type="hidden">
+
+        <div class="grilla grilla-2">
+          <div>
+            <label for="contacto-tipo">Tipo</label>
+            <select id="contacto-tipo">
+              <option value="CLIENTE">Cliente</option>
+              <option value="PROVEEDOR">Proveedor</option>
+              <option value="AMBOS">Cliente y proveedor</option>
+            </select>
+          </div>
+          <div>
+            <label for="contacto-cuit">CUIT / DNI</label>
+            <input id="contacto-cuit" type="text" maxlength="30">
+          </div>
+        </div>
+
+        <label for="contacto-nombre">Nombre <span class="req">*</span></label>
+        <input id="contacto-nombre" type="text" maxlength="200" required>
+
+        <div class="grilla grilla-2">
+          <div>
+            <label for="contacto-razon">Razón social</label>
+            <input id="contacto-razon" type="text" maxlength="200">
+          </div>
+          <div>
+            <label for="contacto-persona">Persona de contacto</label>
+            <input id="contacto-persona" type="text" maxlength="200">
+          </div>
+        </div>
+
+        <div class="grilla grilla-2">
+          <div>
+            <label for="contacto-telefono">Teléfono</label>
+            <input id="contacto-telefono" type="tel" maxlength="50">
+          </div>
+          <div>
+            <label for="contacto-email">Email</label>
+            <input id="contacto-email" type="email" maxlength="120">
+          </div>
+        </div>
+
+        <label for="contacto-direccion">Dirección</label>
+        <input id="contacto-direccion" type="text" maxlength="300">
+
+        <div class="grilla grilla-2">
+          <div>
+            <label for="contacto-localidad">Localidad</label>
+            <input id="contacto-localidad" type="text" maxlength="100">
+          </div>
+          <div>
+            <label for="contacto-provincia">Provincia</label>
+            <input id="contacto-provincia" type="text" maxlength="100">
+          </div>
+        </div>
+
+        <label for="contacto-etiquetas">Etiquetas</label>
+        <input id="contacto-etiquetas" type="text" maxlength="200" placeholder="Ej: obra, electricidad, proveedor habitual">
+
+        <label for="contacto-notas">Notas</label>
+        <textarea id="contacto-notas" rows="3" maxlength="500"></textarea>
+
+        <div id="contacto-error" class="mensaje-error oculto"></div>
+      </form>
+      <div class="modal-pie">
+        <button class="btn" type="button" data-cerrar="modal-contacto">Cancelar</button>
+        <button id="btn-guardar-contacto" class="btn btn-primario" type="button">Guardar contacto</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-picker" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="picker-titulo">
+    <div class="modal-caja modal-caja-amplia">
+      <div class="modal-cabecera">
+        <h2 id="picker-titulo">Buscar contacto</h2>
+        <button class="btn-cerrar" type="button" data-cerrar="modal-picker" aria-label="Cerrar">×</button>
+      </div>
+      <div class="modal-cuerpo">
+        <div class="fila-busqueda">
+          <input id="picker-buscar" type="search" placeholder="Buscar por nombre, CUIT, teléfono o email">
+          <button id="btn-picker-nuevo" class="btn btn-secundario" type="button">Nuevo contacto</button>
+        </div>
+        <div id="picker-lista" class="picker-lista"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-duplicados" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="duplicados-titulo">
+    <div class="modal-caja">
+      <div class="modal-cabecera">
+        <h2 id="duplicados-titulo">Posible duplicado</h2>
+        <button class="btn-cerrar" type="button" data-cerrar="modal-duplicados" aria-label="Cerrar">×</button>
+      </div>
+      <div class="modal-cuerpo">
+        <p id="duplicados-mensaje">Ya existe un contacto similar.</p>
+        <div id="duplicados-lista" class="duplicados-lista"></div>
+      </div>
+      <div class="modal-pie">
+        <button class="btn" type="button" data-cerrar="modal-duplicados">Cancelar</button>
+        <button id="btn-duplicados-forzar" class="btn btn-peligro" type="button">Guardar de todos modos</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-detalle-contacto" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="detalle-contacto-titulo">
+    <div class="modal-caja modal-caja-amplia">
+      <div class="modal-cabecera">
+        <h2 id="detalle-contacto-titulo">Contacto</h2>
+        <button class="btn-cerrar" type="button" data-cerrar="modal-detalle-contacto" aria-label="Cerrar">×</button>
+      </div>
+      <div id="detalle-contacto-contenido" class="modal-cuerpo"></div>
+      <div class="modal-pie">
+        <button id="btn-detalle-reactivar" class="btn oculto" type="button">Reactivar</button>
+        <button id="btn-detalle-archivar" class="btn btn-peligro" type="button">Archivar</button>
+        <button id="btn-detalle-editar" class="btn btn-secundario" type="button">Editar</button>
+        <button id="btn-detalle-cerrar" class="btn" type="button" data-cerrar="modal-detalle-contacto">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-confirmar" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="confirmar-titulo">
+    <div class="modal-caja modal-caja-chica">
+      <div class="modal-cabecera">
+        <h2 id="confirmar-titulo">Confirmar</h2>
+        <button class="btn-cerrar" type="button" data-cerrar="modal-confirmar" aria-label="Cerrar">×</button>
+      </div>
+      <div class="modal-cuerpo">
+        <p id="confirmar-mensaje"></p>
+      </div>
+      <div class="modal-pie">
+        <button id="btn-confirmar-no" class="btn" type="button">Cancelar</button>
+        <button id="btn-confirmar-si" class="btn btn-peligro" type="button">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="utilidades.js?v=1.0.0"></script>
+  <script src="api.js?v=1.0.0"></script>
+  <script src="app.js?v=1.0.0"></script>
+  <script src="contactos.js?v=1.0.0"></script>
+  <script src="documento.js?v=1.0.0"></script>
+</body>
+</html>
