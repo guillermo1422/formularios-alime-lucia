@@ -136,6 +136,21 @@ function nombreContactoVisible(contacto) {
   );
 }
 
+function detalleConCodigo(detalle, codigo) {
+  const base = String(detalle === null || detalle === undefined ? '' : detalle).trim();
+  const limpio = String(codigo === null || codigo === undefined ? '' : codigo).trim();
+  if (!limpio) return base;
+  if (base.indexOf(limpio) !== -1) return base;
+  const etiqueta = 'Código: ' + limpio;
+  return base ? base + ' · ' + etiqueta : etiqueta;
+}
+
+function codigoEnDetalle(detalle) {
+  const coincidencia = String(detalle === null || detalle === undefined ? '' : detalle)
+    .match(/C[oó]digo:\s*([^\s·]+)/i);
+  return coincidencia ? coincidencia[1] : '';
+}
+
 function etiquetaEstado(estado) {
   const texto = String(estado || '').replace(/_/g, ' ').toLowerCase().trim();
   if (!texto) return '';
@@ -305,6 +320,8 @@ if (typeof module !== 'undefined' && module.exports) {
     formatearNumero: formatearNumero,
     formatearMoneda: formatearMoneda,
     parsearNumero: parsearNumero,
+    detalleConCodigo: detalleConCodigo,
+    codigoEnDetalle: codigoEnDetalle,
     nombreContactoVisible: nombreContactoVisible,
     etiquetaEstado: etiquetaEstado,
     claseEstado: claseEstado,

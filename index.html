@@ -9,7 +9,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icono-192.png">
   <link rel="apple-touch-icon" href="assets/icono-192.png">
-  <link rel="stylesheet" href="estilos.css?v=1.0.0">
+  <link rel="stylesheet" href="estilos.css?v=1.1.0">
 </head>
 <body>
 
@@ -74,7 +74,7 @@
     </main>
 
     <footer class="pie-app no-imprimir">
-      <span>Formularios Alime-Lucia · v1.0.0</span>
+      <span>Formularios Alime-Lucia · v1.1.0</span>
       <span id="pie-conexion"></span>
     </footer>
   </div>
@@ -224,10 +224,73 @@
     </div>
   </div>
 
-  <script src="utilidades.js?v=1.0.0"></script>
-  <script src="api.js?v=1.0.0"></script>
-  <script src="app.js?v=1.0.0"></script>
-  <script src="contactos.js?v=1.0.0"></script>
-  <script src="documento.js?v=1.0.0"></script>
+  <div id="modal-escaner" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="escaner-titulo">
+    <div class="modal-caja modal-caja-scanner">
+      <div class="modal-cabecera">
+        <h2 id="escaner-titulo">Escanear código de barras</h2>
+        <button class="btn-cerrar" type="button" data-cerrar="modal-escaner" aria-label="Cerrar">×</button>
+      </div>
+      <div class="modal-cuerpo">
+        <div id="escaner-lector" class="escaner-lector"></div>
+        <div id="escaner-estado" class="escaner-estado">Encendiendo cámara…</div>
+        <div class="escaner-manual">
+          <label for="escaner-codigo-manual">O escribí el código a mano</label>
+          <div class="escaner-manual-fila">
+            <input id="escaner-codigo-manual" type="text" inputmode="numeric" autocomplete="off" placeholder="Ej: 7791234567890">
+            <button id="btn-escaner-manual" class="btn btn-secundario" type="button">Usar código</button>
+          </div>
+        </div>
+        <p class="nota">La cámara necesita permiso y una conexión segura (HTTPS). Si no funciona,
+          escribí el código a mano.</p>
+      </div>
+      <div class="modal-pie">
+        <button class="btn" type="button" data-cerrar="modal-escaner">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-producto" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="modal-producto-titulo">
+    <div class="modal-caja">
+      <div class="modal-cabecera">
+        <h2 id="modal-producto-titulo">Nuevo producto</h2>
+        <button class="btn-cerrar" type="button" data-cerrar="modal-producto" aria-label="Cerrar">×</button>
+      </div>
+      <form id="form-producto" class="modal-cuerpo" autocomplete="off">
+        <input id="producto-id" type="hidden">
+        <label for="producto-codigo">Código de barras <span class="req">*</span></label>
+        <input id="producto-codigo" type="text" maxlength="80" required>
+        <label for="producto-descripcion">Descripción <span class="req">*</span></label>
+        <input id="producto-descripcion" type="text" maxlength="200" required>
+        <label for="producto-detalle">Detalle (opcional)</label>
+        <input id="producto-detalle" type="text" maxlength="300">
+        <div class="grilla grilla-2">
+          <div>
+            <label for="producto-unidad">Unidad</label>
+            <select id="producto-unidad"></select>
+          </div>
+          <div>
+            <label for="producto-precio">Precio unitario</label>
+            <input id="producto-precio" type="text" inputmode="decimal" placeholder="0">
+          </div>
+        </div>
+        <label class="check-linea"><input id="producto-activo" type="checkbox" checked> Producto activo</label>
+        <div id="producto-error" class="mensaje-error oculto"></div>
+      </form>
+      <div class="modal-pie">
+        <button id="btn-producto-solo-codigo" class="btn oculto" type="button">Agregar solo el código</button>
+        <button class="btn" type="button" data-cerrar="modal-producto">Cancelar</button>
+        <button id="btn-guardar-producto" class="btn btn-primario" type="button">Guardar producto</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="utilidades.js?v=1.1.0"></script>
+  <script src="api.js?v=1.1.0"></script>
+  <script src="app.js?v=1.1.0"></script>
+  <script src="contactos.js?v=1.1.0"></script>
+  <script src="documento.js?v=1.1.0"></script>
+  <script src="vendor/html5-qrcode.min.js"></script>
+  <script src="productos.js?v=1.1.0"></script>
+  <script src="escaner.js?v=1.1.0"></script>
 </body>
 </html>

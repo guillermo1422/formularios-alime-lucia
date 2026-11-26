@@ -28,7 +28,8 @@ function itemVacioEditor(tipo) {
     descripcion: '',
     detalle: '',
     precio_unitario: 0,
-    subtotal: 0
+    subtotal: 0,
+    codigo_barras: ''
   };
 }
 
@@ -56,7 +57,8 @@ function clonarItemEditor(item) {
     descripcion: item.descripcion || '',
     detalle: item.detalle || '',
     precio_unitario: Number(item.precio_unitario) || 0,
-    subtotal: Number(item.subtotal) || 0
+    subtotal: Number(item.subtotal) || 0,
+    codigo_barras: item.codigo_barras || codigoEnDetalle(item.detalle)
   };
 }
 
@@ -396,6 +398,7 @@ function tablaItemsEditor(d) {
   }
 
   const textoAgregar = doc.tipo === 'RECIBO_COBRO' ? '+ Agregar concepto' : '+ Agregar ítem';
+  const puedeEscanear = doc.tipo === 'PRESUPUESTO' || doc.tipo === 'SOLICITUD_PRESUPUESTO';
 
   return '<table class="hoja-tabla">' +
     '<thead><tr>' +
@@ -409,6 +412,10 @@ function tablaItemsEditor(d) {
   '<div class="acciones-items no-imprimir">' +
     '<button class="btn-agregar" type="button" data-accion="agregar-item">' +
       esc(textoAgregar) + '</button>' +
+    (puedeEscanear
+      ? '<button class="btn-agregar btn-escanear" type="button" data-accion="escanear-item">' +
+        'Escanear código</button>'
+      : '') +
     (empresaEditor(doc) && String(empresaEditor(doc).empresa_id).toUpperCase() === 'LUCIA' &&
       doc.tipo !== 'RECIBO_COBRO'
       ? '<button class="btn-agregar" type="button" data-accion="agregar-mano-obra">' +
@@ -591,6 +598,12 @@ function enlazarEventosEditor() {
       agregarItemEditor();
     } else if (tipo === 'agregar-mano-obra') {
       agregarManoObraEditor();
+    } else if (tipo === 'escanear-item') {
+      if (typeof abrirEscanerParaDocumento === 'function') {
+        abrirEscanerParaDocumento();
+      } else {
+        toast('El lector de códigos no está disponible.', 'error');
+      }
     } else if (tipo === 'quitar-item') {
       quitarItemEditor(Number(accion.getAttribute('data-index')));
     } else if (tipo === 'elegir-contacto') {

@@ -1,15 +1,18 @@
 /* Formularios Alime-Lucia - Service Worker */
 
-const CACHE = 'fal-v1.0.0';
+const CACHE = 'fal-v1.1.0';
 const ARCHIVOS = [
   './',
   'index.html',
-  'estilos.css?v=1.0.0',
-  'utilidades.js?v=1.0.0',
-  'api.js?v=1.0.0',
-  'app.js?v=1.0.0',
-  'contactos.js?v=1.0.0',
-  'documento.js?v=1.0.0',
+  'estilos.css?v=1.1.0',
+  'utilidades.js?v=1.1.0',
+  'api.js?v=1.1.0',
+  'app.js?v=1.1.0',
+  'contactos.js?v=1.1.0',
+  'documento.js?v=1.1.0',
+  'vendor/html5-qrcode.min.js',
+  'productos.js?v=1.1.0',
+  'escaner.js?v=1.1.0',
   'manifest.json',
   'assets/logo-alime.jpg',
   'assets/logo-lucia.png',

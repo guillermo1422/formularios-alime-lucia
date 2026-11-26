@@ -6,11 +6,13 @@ const Estado = {
   empresas: [],
   contactos: [],
   documentos: [],
+  productos: [],
   resumen: null,
   vista: 'inicio',
   nuevaEmpresa: 'ALIME',
   filtrosDocs: { texto: '', empresa_id: '', tipo: '', estado: '' },
   filtrosDirectorio: { texto: '', tipo: '', incluir_archivados: false },
+  filtrosProductos: { texto: '', incluir_inactivos: false },
   seleccionContacto: null,
   hayCambios: false,
   documento: null,
@@ -21,6 +23,10 @@ const Estado = {
   contactoEnEdicion: null,
   contactoDetalle: null,
   contactoDuplicadoPendiente: null,
+  escanerCallback: null,
+  productoEnEdicion: null,
+  productoFormCallback: null,
+  productoFormOpciones: null,
   confirmarCallback: null
 };
 
@@ -62,6 +68,15 @@ function cerrarModal(id) {
   const modal = document.getElementById(id);
   if (!modal) return;
   modal.classList.add('oculto');
+  if (id === 'modal-escaner') {
+    Estado.escanerCallback = null;
+    if (typeof detenerEscaner === 'function') detenerEscaner();
+  }
+  if (id === 'modal-producto') {
+    Estado.productoFormCallback = null;
+    Estado.productoEnEdicion = null;
+    Estado.productoFormOpciones = null;
+  }
   if (id === 'modal-confirmar' && Estado.confirmarCallback) {
     const cb = Estado.confirmarCallback;
     Estado.confirmarCallback = null;
@@ -267,7 +282,9 @@ async function conectar(url, pin, usuario, silencioso) {
     Estado.contactos = respuestas[0] || [];
     Estado.resumen = respuestas[1] || null;
     Estado.documentos = [];
+    Estado.productos = [];
     Estado.filtrosDocs = { texto: '', empresa_id: '', tipo: '', estado: '' };
+    if (typeof cargarProductos === 'function') await cargarProductos();
 
     if (!empresaPorId(Estado.nuevaEmpresa)) {
       const primera = empresasActivas()[0] || Estado.empresas[0];
@@ -294,10 +311,14 @@ async function desconectar() {
   Estado.empresas = [];
   Estado.contactos = [];
   Estado.documentos = [];
+  Estado.productos = [];
   Estado.resumen = null;
   Estado.documento = null;
   Estado.hayCambios = false;
   Estado.filtrosDocs = { texto: '', empresa_id: '', tipo: '', estado: '' };
+  Estado.filtrosProductos = { texto: '', incluir_inactivos: false };
+  Estado.escanerCallback = null;
+  if (typeof detenerEscaner === 'function') detenerEscaner();
   mostrarConexion();
 }
 
@@ -666,7 +687,7 @@ function renderConfiguracion() {
           '<div><label>URL de la API</label><input type="text" value="' + esc(Api.url) + '" readonly></div>' +
           '<div><label>Servidor</label><input type="text" value="' + esc(host) + '" readonly></div>' +
           '<div><label>Usuario</label><input type="text" value="' + esc(Api.usuario) + '" readonly></div>' +
-          '<div><label>Versión</label><input type="text" value="' + esc(app.version || '1.0.0') + '" readonly></div>' +
+          '<div><label>Versión</label><input type="text" value="' + esc(app.version || '1.1.0') + '" readonly></div>' +
         '</div>' +
         '<p class="nota">El PIN se guarda en este dispositivo. Para cambiarlo, usá la función <code>establecerPin()</code> en Apps Script y luego volvé a conectar.</p>' +
         '<div class="config-acciones">' +
@@ -704,7 +725,10 @@ function renderConfiguracion() {
         '<div><h2>Datos de las empresas</h2><p>Completá los datos legales y comerciales de cada logo.</p></div>' +
       '</div>' +
       '<div class="config-empresas">' + empresasHtml + '</div>' +
-    '</div>';
+    '</div>' +
+    (typeof seccionCatalogoProductos === 'function' ? seccionCatalogoProductos() : '');
+
+  if (typeof actualizarListaCatalogo === 'function') actualizarListaCatalogo();
 }
 
 function campoEmpresa(etiqueta, campo, valor) {
